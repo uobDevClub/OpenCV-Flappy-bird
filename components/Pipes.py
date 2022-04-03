@@ -3,14 +3,14 @@ import pygame
 from util import *
 
 class Pipe(pygame.sprite.Sprite):
-    def __init__(self, screenSize) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.image = pygame.image.load("./img/pipe.png")
-        self.image = pygame.transform.scale2x(self.image)
+        self.image = pygame.transform.scale2x(self.image).convert()
 
-        self.image_2 = pygame.transform.flip(self.image, False, True)
+        self.image_2 = pygame.transform.flip(self.image, False, True).convert()
 
-        self.screenSize = screenSize
+        self.screenSize = pygame.display.get_surface().get_size()
 
         self.rect = self.image.get_rect()
         self.rect.x = self.screenSize[0] - self.rect.w // 2
@@ -27,7 +27,7 @@ class Pipe(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         screen.blit(self.image_2, self.rect_2)
 
-    def update(self, tick) -> None:
+    def update(self, tick: float) -> None:
         if self.rect.x <= 0:
             self.rect.x = self.screenSize[0]
             self.rect_2.x = self.rect.x

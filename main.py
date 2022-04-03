@@ -1,6 +1,7 @@
 import cv2
 import pygame
 from win32api import GetMonitorInfo, MonitorFromPoint
+from components.Backgroud import Background
 from components.Pipes import Pipe
 from components.Player import Player
 
@@ -31,10 +32,12 @@ class Game:
     def initialize(self):
         self.pipesGroup = pygame.sprite.Group()
 
-        self.pipes = Pipe(self.SCREEN_SIZE)
+        self.pipes = Pipe()
         self.pipesGroup.add(self.pipes)
 
         self.player = Player()
+
+        self.background = Background()
     
     def run(self) -> None:
         while self.running:
@@ -77,6 +80,7 @@ class Game:
      
     def draw(self) -> None:
         self.screen.fill((0, 0, 0))
+        self.background.draw(self.screen)
         # cv2.imshow('frame', img)
         self.pipes.draw(self.screen)
         self.player.draw(self.screen)
@@ -84,6 +88,7 @@ class Game:
         
 
     def update(self, timedelta) -> None:
+        self.background.update()
         self.pipes.update(timedelta)
         self.player.update()
         if self.pipes.isColliding(self.player):
