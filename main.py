@@ -2,10 +2,16 @@ import cv2
 import pygame
 from win32api import GetMonitorInfo, MonitorFromPoint
 from components.Pipes import Pipe
+from components.Player import Player
 
 face_detection = cv2.CascadeClassifier(cv2.data.haarcascades +
                                        "haarcascade_frontalface_default.xml")
 class Game:
+    
+    MAIN_MENU = 0
+    ONGOING = 1
+    EXIT_GAME = -1
+
     def __init__(self) -> None:
         pygame.init()
 
@@ -19,25 +25,24 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.running = True
-        self.menu = 0
+        self.menu = self.ONGOING
         self.initialize()
     
     def initialize(self):
-        self.all_sprites = pygame.sprite.Group()
-        self.pipes = pygame.sprite.Group()
+        self.pipesGroup = pygame.sprite.Group()
 
-        self.pipe1 = Pipe(self.SCREEN_SIZE)
-        # pipe2 = PipeDown(self.pipe1)
+        self.pipes = Pipe(self.SCREEN_SIZE)
+        self.pipesGroup.add(self.pipes)
 
-        self.pipes.add(self.pipe1)
-        # self.pipes.add(pipe2)
-
+        self.player = Player()
     
     def run(self) -> None:
         while self.running:
             match self.menu:
-                case 0:
+                case self.ONGOING:
                     self.gaming()
+                case self.EXIT_GAME:
+                    break
         
                     
     def gaming(self) -> None:
@@ -49,7 +54,6 @@ class Game:
             # faces = face_detection.detectMultiScale(gray, scaleFactor = 1.2, minNeighbors = 5)
 
             timedelta = self.clock.tick(60) / 1000
-            print(self.clock.get_fps())
 
             self.events()
             # for (x, y, w, h) in faces:
@@ -74,14 +78,17 @@ class Game:
     def draw(self) -> None:
         self.screen.fill((0, 0, 0))
         # cv2.imshow('frame', img)
-        self.pipe1.draw(self.screen)
+        self.pipes.draw(self.screen)
+        self.player.draw(self.screen)
         pygame.display.flip()
         
 
     def update(self, timedelta) -> None:
         self.pipes.update(timedelta)
-        # if pygame.sprite.spritecollide(self.player, self.pipes, False):
-        #     self.playing = False
+        self.player.update()
+        if self.pipes.isColliding(self.player):
+            self.playing = False
+            self.menu = self.EXIT_GAME
 
 if __name__ == "__main__":
     game = Game()
