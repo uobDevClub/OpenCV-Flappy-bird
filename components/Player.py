@@ -1,3 +1,4 @@
+from util import translate
 from threading import Thread
 import pygame
 import cv2
@@ -44,5 +45,9 @@ class Player(pygame.sprite.Sprite):
                                                 minNeighbors=5)
         for (x, y, w, h) in self.faces:
             cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            vw, vh = self.img.shape[:2]
+            self.rect.center = self.mapCoord(x, y, vw, vh)
 
-            self.rect.center = (x, y)
+    def mapCoord(self, x, y, w, h):
+        windowWidth, windowHeight = pygame.display.get_surface().get_size()
+        return (translate(x, 0, w, 0, windowWidth), translate(y, 0, h, 0, windowHeight))
