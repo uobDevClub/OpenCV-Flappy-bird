@@ -1,8 +1,10 @@
+import math
 import random
 import pygame
 from util import *
 
 class Pipe(pygame.sprite.Sprite):
+    done = False
     def __init__(self) -> None:
         super().__init__()
         self.image = pygame.image.load("./img/pipe.png")
@@ -27,16 +29,22 @@ class Pipe(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         screen.blit(self.image_2, self.rect_2)
 
-    def update(self, tick: float) -> None:
+    def update(self, tick: float, score: int) -> None:
         if self.rect.x <= 0:
+            self.done = False
             self.rect.x = self.screenSize[0]
             self.rect_2.x = self.rect.x
 
             self.rect.y = self.screenSize[1] - random.randint(30, self.rect.h)
             self.rect_2.bottom = self.rect.y - random.randint(75, 125)
         else:
-            self.rect.x -= 100 * min(tick, 1 / 60)
+            self.rect.x -= (100 * min(2*math.log(score + 1) + 1, score+1)) * min(tick, 1 / 60)
             self.rect_2.x = self.rect.x
 
     def isColliding(self, other: pygame.sprite.Sprite) -> bool:
         return collide_mask(other.mask, self.mask, other.rect ,self.rect) or collide_mask(other.mask, self.mask_2, other.rect ,self.rect_2)
+    
+    def isPassed(self, other: pygame.sprite.Sprite) -> bool:
+        newRect = pygame.rect.Rect(self.rect_2.bottomleft, (self.rect.w, self.rect.topleft[1] - self.rect_2.bottomleft[1])) 
+
+        return newRect.colliderect(other.rect) 

@@ -23,16 +23,16 @@ class Player(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def update(self, cap) -> None:
-        t1 = Thread(target=self.readVideo, args=(cap,))
-        t1.start()
-        t1.join()
+        # t1 = Thread(target=self.readVideo, args=(cap,))
+        # t1.start()
+        # t1.join()
 
-        t2 = Thread(target=self.processVideo, args=())
-        t2.start()
-        t2.join()
+        # t2 = Thread(target=self.processVideo, args=())
+        # t2.start()
+        # t2.join()
 
-        cv2.imshow('frame', self.img)
-        # self.rect.center = pygame.mouse.get_pos()
+        # cv2.imshow('frame', self.img)
+        self.rect.center = pygame.mouse.get_pos()
         return
 
     def readVideo(self, cap):

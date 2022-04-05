@@ -37,6 +37,13 @@ class Game:
         self.player = Player()
 
         self.background = Background()
+
+        self.score = 0
+
+        self.font = pygame.font.SysFont("Impact", 60)
+        self.text = self.font.render(f"{self.score}", True, (255, 255, 255))
+        self.textRect = self.text.get_rect()
+        self.textRect.center = (self.SCREEN_SIZE[0] // 2, self.SCREEN_SIZE[1] - self.textRect.h)
     
     def run(self) -> None:
         while self.running:
@@ -52,13 +59,13 @@ class Game:
         self.cap = cv2.VideoCapture(0)
         while self.playing:
 
-            self.timedelta = self.clock.tick(60) / 1000
+            self.timedelta = self.clock.tick(120) / 1000
 
             self.events()
             
             self.draw()
             self.update()
-            print(self.clock.get_fps())
+            # print(self.clock.get_fps())
 
     
     def events(self) -> None:
@@ -74,18 +81,25 @@ class Game:
         
         self.pipes.draw(self.screen)
         self.player.draw(self.screen)
+
+        self.screen.blit(self.text, self.textRect)
         pygame.display.flip()
         
 
     def update(self) -> None:
         self.background.update()
-        self.pipes.update(self.timedelta)
+        self.pipes.update(self.timedelta, self.score)
 
         self.player.update(self.cap)
         
         if self.pipes.isColliding(self.player):
             self.playing = False
             self.menu = self.EXIT_GAME
+        
+        if self.pipes.isPassed(self.player) and not self.pipes.done:
+            self.pipes.done = True
+            self.score += 1
+            self.text = self.font.render(f"{self.score}", True, (255, 255, 255))
 
 if __name__ == "__main__":
     game = Game()
