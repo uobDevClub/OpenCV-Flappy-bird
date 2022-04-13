@@ -23,16 +23,16 @@ class Player(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def update(self, cap) -> None:
-        # t1 = Thread(target=self.readVideo, args=(cap,))
-        # t1.start()
-        # t1.join()
+        t1 = Thread(target=self.readVideo, args=(cap, ))
+        t1.start()
+        t1.join()
 
-        # t2 = Thread(target=self.processVideo, args=())
-        # t2.start()
-        # t2.join()
+        t2 = Thread(target=self.processVideo, args=())
+        t2.start()
+        t2.join()
 
-        # cv2.imshow('frame', self.img)
-        self.rect.center = pygame.mouse.get_pos()
+        cv2.imshow('frame', self.img)
+        # self.rect.center = pygame.mouse.get_pos()
         return
 
     def readVideo(self, cap):
@@ -41,8 +41,8 @@ class Player(pygame.sprite.Sprite):
     def processVideo(self):
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.faces = face_detection.detectMultiScale(gray,
-                                                scaleFactor=1.2,
-                                                minNeighbors=5)
+                                                     scaleFactor=1.2,
+                                                     minNeighbors=5)
         for (x, y, w, h) in self.faces:
             cv2.rectangle(self.img, (x, y), (x + w, y + h), (0, 255, 0), 2)
             vw, vh = self.img.shape[:2]
@@ -50,4 +50,5 @@ class Player(pygame.sprite.Sprite):
 
     def mapCoord(self, x, y, w, h):
         windowWidth, windowHeight = pygame.display.get_surface().get_size()
-        return (translate(x, 0, w, 0, windowWidth), translate(y, 0, h, 0, windowHeight))
+        return (translate(x, 0, w, 0,
+                          windowWidth), translate(y, 0, h, 0, windowHeight))
